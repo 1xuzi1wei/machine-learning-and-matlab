@@ -1,0 +1,38 @@
+%% 一、 清除环境变量
+clear all
+clc
+
+%% 二、 训练集/测试集的产生
+%%
+% 1、导入数据
+load concrete_data.mat
+
+%%
+% 2、 随机产生训练集及测试集
+temp = randperm(size(attributes,2));
+% 训练集——80个样本
+P_train = attributes(:,temp(1:80));
+T_train = strength(:,temp(1:80));
+%测试集——23个样本
+P_test = attributes(:,temp(81:103));
+T_test = strength(:,temp(81:103));
+N = size(P_test,2);
+
+%% 三、 数据归一化
+[p_train,ps_input] = mapminmax(P_train,0,1);
+p_test = mapminmax('apply',P_test,ps_input);
+
+[t_train,ps_output] = mapminmax(T_train,0,1);
+
+%% 四、 BP神经网络创建、训练及仿真测试
+%%
+% 1、 创建网络
+net = newff(p_train,t_train,9);
+
+%% 2、设置训练参数
+net.trainParam.epochs = 1000;
+net.trainParam.goal = 1e-3;
+net.trainParam.lr = 0.01;
+
+
+
